@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+# CONTROLLER NODE ___ THE MOTION MODEL OF THE LOCALISATION ALGORITHM
+
+import rospy
+from sensor_msgs.msg import JointState
+from geometry_msgs.msg import Twist, Vector3
+
+### Getting the robot's state estimate 
+### For now this is from the joint_state_publisher
+### SHOULD CHANGE TO RECIEVE STATE ESTIMATE FROM MEASUREMENT_MODEL NODE
+
+def turtlebot_get_state_belief():
+
+	#Initiate motion model node for the Bayes Filter.
+	rospy.init_node('motion_model', anonymous=True)
+
+	#Define subscriber to get the turtlebot's state belief (bel_state)
+	rospy.Subscriber("joint_states", JointState, send_vel_command)
+
+	#rospy.spin()
+		### ADD LOGINFO ####
+
+### writing a velocity to robot ----> THIS FUNCTION SHOULD BE INTIRELY REPLACED BY REFERENCE PROVIDER 
+### reference provider should be a SERVICE
+
+
+
+### Publish the calculated linear and angular velocity to the Turtlebot in order to 
+### get to the desired position that was given by the service REFERENCE PROVIDER
+def send_vel_command():
+	
+	pub = rospy.Publisher('/cmd_vel_mux/input/teleop',Twist, queue_size = 10)
+	r = rospy.Rate(62.5) #62.5hz
+	turtlebot_get_state_belief()
+	while not rospy.is_shutdown():
+
+
+		t = rospy.get_time()
+		velocity_linear=0.1
+		velocity_angular= 0.1
+		velocities = Twist(Vector3((velocity_linear),0,0), Vector3(0,0,(velocity_angular)))
+		rospy.loginfo(velocities)
+		pub.publish(velocities)
+
+
+		r.sleep()
+
+
+
+
+#Main section of code that will continuously run unless rospy receives interuption (ie CTRL+C)
+if __name__ == '__main__':
+	try: send_vel_command()
+	except rospy.ROSInterruptException: pass
