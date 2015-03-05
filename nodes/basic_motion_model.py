@@ -12,6 +12,20 @@ from my_tutorial.srv import *
 ### SHOULD CHANGE TO RECIEVE STATE ESTIMATE FROM MEASUREMENT_MODEL NODE
 # def turtlebot_get_state_belief():
 
+def get_state_belief(bel_state):
+
+	now = rospy.get_time()
+	bel_left_wheel = bel_state.position[0]
+	bel_right_wheel = bel_state.position[1]
+	bel_left_vel = bel_state.velocity[0]
+	bel_right_vel = bel_state.velocity[1]
+
+	past_time = rospy.get_time()
+	print "Turtlebot believes it is at coordinates x= %s, y=%s"%(bel_left_wheel, bel_right_wheel)
+	print "Turtlebot believes it's velocity is vx=%s, vy=%s"%(bel_right_vel, bel_left_vel)
+
+	return(bel_left_wheel, bel_right_wheel, bel_right_vel, bel_left_vel, past_time)
+
 # 	#Define subscriber to get the turtlebot's state belief (bel_state)
 # 	rospy.Subscriber("joint_states", JointState)
 
@@ -21,8 +35,7 @@ from my_tutorial.srv import *
 	
 # 	rospy.spin()
 
-
-				### GETTING DESIRED POSITION INTO VELOCITY ####
+				### GETTING DESIRED POSITION ####
 ### writing a velocity to robot ----> THIS FUNCTION SHOULD BE INTIRELY REPLACED BY REFERENCE PROVIDER 
 ### reference provider should be a SERVICE
 def get_desired_state_server():
@@ -39,10 +52,15 @@ def get_desired_state_server():
 ### x,y position and turn this into a velocity. The velocity is then sent to the controller send_vel_command, which in turn
 ### sends the velocity to the robot. 
 
-def get_vel(req):
-	# print "You want the Turtlebot to go to coordinates x= %s, y= %s, th=%s"%(req.x, req.y, req.th)
+
+			### CALCULATING THE CORRECT VELOCITY COMMAND ###
+### For now this is from a crude kinematics calcualtion 
+### SHOULD CHANGE TO MOTION MODEL TO ACCOUNT FOR ERRORS
+
+def get_vel(desired_state):
+	print "You want the Turtlebot to go to coordinates x= %s, y= %s, th=%s"%(desired_state.x, desired_state.y, desired_state.th)
 	# return DesiredStateResponse(req.v, req.w)
-	print "Returning %s+ %s = %s"%(req.x, req.y, req.th)
+
 	### changing x and y and theta to velocity should happen here
 	### return the requested type that is angular and lienar velocity
 
@@ -50,16 +68,13 @@ def get_vel(req):
 	#rospy.init_node('motion_model', anonymous=True)
 
 	#Define subscriber to get the turtlebot's state belief (bel_state)
-	rospy.Subscriber("joint_states", JointState)
+	rospy.Subscriber("joint_states", JointState, get_state_belief)
 
-	a = JointState.position
-	print a
+	now = rospy.get_time()
 
-	DesiredState.v = req.x + req.y
-	DesiredState.w = req.th
-	return (DesiredState.v, DesiredState.w)
-
-
+	desired_state.v = desired_state.x + desired_state.y
+	desired_state.w = desired_state.th
+	return (desired_state.v, desired_state.w)
 
 
 				### SENDING VELOCITY COMMAND ####
