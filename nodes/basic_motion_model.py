@@ -45,6 +45,16 @@ def get_vel(req):
 	print "Returning %s+ %s = %s"%(req.x, req.y, req.th)
 	### changing x and y and theta to velocity should happen here
 	### return the requested type that is angular and lienar velocity
+
+	#Initiate motion model node for the Bayes Filter.
+	#rospy.init_node('motion_model', anonymous=True)
+
+	#Define subscriber to get the turtlebot's state belief (bel_state)
+	rospy.Subscriber("joint_states", JointState)
+
+	a = JointState.position
+	print a
+
 	DesiredState.v = req.x + req.y
 	DesiredState.w = req.th
 	return (DesiredState.v, DesiredState.w)
@@ -56,12 +66,6 @@ def get_vel(req):
 ### Publish the calculated linear and angular velocity to the Turtlebot in order to 
 ### get to the desired position that was given by the service REFERENCE PROVIDER
 def send_vel_command():
-
-	#Initiate motion model node for the Bayes Filter.
-	rospy.init_node('motion_model', anonymous=True)
-
-	#Define subscriber to get the turtlebot's state belief (bel_state)
-	rospy.Subscriber("joint_states", JointState)
 
 	#Define publiser to send the calculated velocity to the turtlebot
 	pub = rospy.Publisher('/cmd_vel_mux/input/teleop',Twist, queue_size = 10)
