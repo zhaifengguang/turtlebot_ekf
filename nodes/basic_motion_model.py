@@ -22,9 +22,6 @@ from my_tutorial.srv import *
 # 	rospy.spin()
 
 
-
-
-
 				### GETTING DESIRED POSITION INTO VELOCITY ####
 ### writing a velocity to robot ----> THIS FUNCTION SHOULD BE INTIRELY REPLACED BY REFERENCE PROVIDER 
 ### reference provider should be a SERVICE
