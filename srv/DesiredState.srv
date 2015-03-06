@@ -1,6 +1,3 @@
-int64 x
-int64 y
-int64 th
+Config q
 ---
-int64 v
-int64 w
+Control u

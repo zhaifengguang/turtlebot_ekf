@@ -1,5 +1,3 @@
-int64 x
-int64 y
+config q
 ---
-int64 x
-int64 y
+control u

@@ -3,6 +3,7 @@
 import rospy
 import sys
 from my_tutorial.srv import * 
+from my_tutorial.msg import *
 
 def get_desired_state_client(x,y,th):
 	rospy.wait_for_service('get_desired_state')

@@ -70,12 +70,14 @@ def get_vel(desired_state):
 	#Define subscriber to get the turtlebot's state belief (bel_state)
 	rospy.Subscriber("joint_states", JointState, get_state_belief)
 
-	now = rospy.get_time()
+	now_time = rospy.get_time()
 
+	#new_vel.v = (desired_state.x -)/(now_time - past_time)
+	#new_vel.w = 
 	desired_state.v = desired_state.x + desired_state.y
 	desired_state.w = desired_state.th
+	#return (new_vel.v, new_vel.w)
 	return (desired_state.v, desired_state.w)
-
 
 				### SENDING VELOCITY COMMAND ####
 ### Publish the calculated linear and angular velocity to the Turtlebot in order to 
