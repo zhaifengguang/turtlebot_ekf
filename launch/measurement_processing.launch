@@ -1,0 +1,6 @@
+<launch>
+
+	<!-- running the data_processing node -->
+	<node name="prediction" pkg="my_tutorial" type="data_processing.py" required="true" output="screen" launch-prefix="xterm -e"/>
+
+</launch>

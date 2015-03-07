@@ -1,0 +1,6 @@
+<launch>
+
+	<!-- running the reference provider server -->
+	<node name="get_desired_state_server" pkg="my_tutorial" type="reference_provider.py" required="true" output="screen" launch-prefix="xterm -e"/>
+
+</launch>
