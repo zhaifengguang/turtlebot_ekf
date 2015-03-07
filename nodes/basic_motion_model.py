@@ -1,116 +1,87 @@
 #!/usr/bin/env python
-
 # CONTROLLER NODE ___ THE MOTION MODEL OF THE LOCALISATION ALGORITHM
 
+import sys
 import rospy
-from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist, Vector3
-from my_tutorial.srv import * 
+from my_tutorial.srv import * #import all custom package srv
+from my_tutorial.msg import * #import all custom package msg
+from math import sqrt
 
-			### Getting the robot's state estimate ####
-### For now this is from the joint_state_publisher
-### SHOULD CHANGE TO RECIEVE STATE ESTIMATE FROM MEASUREMENT_MODEL NODE
-# def turtlebot_get_state_belief():
+# global variable FIND A BETTER WAY TO DO THIS!
+# x_estimated = 0
+# y_estimated = 0
+# yaw_estimated = 0
 
-def get_state_belief(bel_state):
-
-	now = rospy.get_time()
-	bel_left_wheel = bel_state.position[0]
-	bel_right_wheel = bel_state.position[1]
-	bel_left_vel = bel_state.velocity[0]
-	bel_right_vel = bel_state.velocity[1]
-
-	past_time = rospy.get_time()
-	print "Turtlebot believes it is at coordinates x= %s, y=%s"%(bel_left_wheel, bel_right_wheel)
-	print "Turtlebot believes it's velocity is vx=%s, vy=%s"%(bel_right_vel, bel_left_vel)
-
-	return(bel_left_wheel, bel_right_wheel, bel_right_vel, bel_left_vel, past_time)
-
-# 	#Define subscriber to get the turtlebot's state belief (bel_state)
-# 	rospy.Subscriber("joint_states", JointState)
-
-# 	#Initiate motion model node for the Bayes Filter.
-# 	rospy.init_node('motion_model', anonymous=True)
-
-	
-# 	rospy.spin()
-
-				### GETTING DESIRED POSITION ####
-### writing a velocity to robot ----> THIS FUNCTION SHOULD BE INTIRELY REPLACED BY REFERENCE PROVIDER 
-### reference provider should be a SERVICE
-def get_desired_state_server():
-
-    rospy.init_node('get_desired_state_server')
-    ### gets the service, and then calls the function get_vel with the servie parameters
-    s = rospy.Service('get_desired_state', DesiredState, get_vel)
-    print "Ready to recieve desired state."
-
-    rospy.spin()
-
-
-### the reference provider will get the x,y from the JointState.position and get an input service from user for a desired
-### x,y position and turn this into a velocity. The velocity is then sent to the controller send_vel_command, which in turn
-### sends the velocity to the robot. 
-
-
-			### CALCULATING THE CORRECT VELOCITY COMMAND ###
-### For now this is from a crude kinematics calcualtion 
-### SHOULD CHANGE TO MOTION MODEL TO ACCOUNT FOR ERRORS
-
-def get_vel(desired_state):
-	print "You want the Turtlebot to go to coordinates x= %s, y= %s, th=%s"%(desired_state.x, desired_state.y, desired_state.th)
-	# return DesiredStateResponse(req.v, req.w)
-
-	### changing x and y and theta to velocity should happen here
-	### return the requested type that is angular and lienar velocity
+#Subscribed to Topic state_estimate that is being published
+#by the prediction node (executable file name: data_processing)
+def get_state_belief():
 
 	#Initiate motion model node for the Bayes Filter.
-	#rospy.init_node('motion_model', anonymous=True)
+	rospy.init_node('motion_model', anonymous=True)
 
-	#Define subscriber to get the turtlebot's state belief (bel_state)
-	rospy.Subscriber("joint_states", JointState, get_state_belief)
+	#(x_estimated, y_estimated, yaw_estimated) = get_state_belief()
+	rospy.Subscriber('state_estimate', Config, send_vel_command)
 
-	now_time = rospy.get_time()
+	rospy.spin()
 
-	#new_vel.v = (desired_state.x -)/(now_time - past_time)
-	#new_vel.w = 
-	desired_state.v = desired_state.x + desired_state.y
-	desired_state.w = desired_state.th
-	#return (new_vel.v, new_vel.w)
-	return (desired_state.v, desired_state.w)
 
-				### SENDING VELOCITY COMMAND ####
-### Publish the calculated linear and angular velocity to the Turtlebot in order to 
-### get to the desired position that was given by the service REFERENCE PROVIDER
-def send_vel_command():
+def get_desired_state_client(t):
+
+	rospy.wait_for_service('get_desired_state')
+	try: 
+
+		new_config = rospy.ServiceProxy('get_desired_state', DesiredState)
+		x_desired = new_config(t).q.x
+		y_desired = new_config(t).q.y
+		yaw_desired = new_config(t).q.th
+		print "response from request at t=%s is: [%s %s %s]"%(t, x_desired, y_desired, yaw_desired)
+		return (x_desired, y_desired, yaw_desired)
+		#return (new_config)
+	except rospy.ServiceException, e: 
+		print "Service call failed: %s"%e
+
+
+def send_vel_command(data):
 
 	#Define publiser to send the calculated velocity to the turtlebot
 	pub = rospy.Publisher('/cmd_vel_mux/input/teleop',Twist, queue_size = 10)
-	
-	# #Initiate motion model node for the Bayes Filter.
-	# rospy.init_node('motion_model', anonymous=True)
 
 	r = rospy.Rate(62.5) #62.5hz
+
+	x_estimated = data.x
+	y_estimated = data.y
+	yaw_estimated = data.th
+	print "x_estimated:%s, y_estimated:%s, yaw_estimated: %s"%(x_estimated, y_estimated, yaw_estimated)
+	# spin() simply keeps python from exiting until this node is stopped
+	#rospy.spin()
 	
 
 	while not rospy.is_shutdown():
 
-
 		t = rospy.get_time()
-		velocity_linear=0
-		velocity_angular= 0.1
+		(x_desired, y_desired, yaw_desired) = get_desired_state_client(t)
+
+		new_time = rospy.get_time()
+		dt = new_time - t
+		v_x = (x_desired - x_estimated)
+		v_y = (y_desired - y_estimated)
+		velocity_linear = sqrt(v_x**2 + v_y**2)
+		velocity_angular= (yaw_desired - yaw_estimated)/dt
+		#print "velocities linear=$s, angular=%s"%(velocity_linear, velocity_angular)
 		velocities = Twist(Vector3((velocity_linear),0,0), Vector3(0,0,(velocity_angular)))
 		rospy.loginfo(velocities)
 		pub.publish(velocities)
-
+		#past_time = new_time
 
 		r.sleep()
 
-
-
+	rospy.spin()
 
 #Main section of code that will continuously run unless rospy receives interuption (ie CTRL+C)
 if __name__ == '__main__':
-	#try: turtlebot_get_state_belief()
-	try: get_desired_state_server()
+
+	try: get_state_belief()
 	except rospy.ROSInterruptException: pass
+
+

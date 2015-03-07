@@ -20,6 +20,10 @@
 	<!-- run nodes -->
 	<!-- motion controller node -->
 	<include file="$(find my_tutorial)/launch/motion_controller.launch"/>
-   
+	<!-- measuremetn processing node -->
+	<include file="$(find my_tutorial)/launch/measurement_processing.launch"/>
+	<!-- reference provider -->
+	<include file="$(find my_tutorial)/launch/reference_provider.launch"/>
 
+   
 </launch>

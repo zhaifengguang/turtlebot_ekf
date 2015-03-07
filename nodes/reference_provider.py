@@ -4,30 +4,34 @@ import rospy
 import sys
 from my_tutorial.srv import * 
 from my_tutorial.msg import *
+from math import cos, sin,atan
 
-def get_desired_state_client(x,y,th):
-	rospy.wait_for_service('get_desired_state')
-	try: 
-		get_desired_state = rospy.ServiceProxy('get_desired_state', DesiredState)                                                                                                                                     
-		resp1 = get_desired_state(x, y, th)
-		return (resp1.v, resp1.w)
+def provide_reference_config(req):
+	x_desired = cos(req.t)
+	y_desired = sin(req.t)
+	if y_desired != 0:
+		th_desired = atan(x_desired/y_desired)
+	else: th_desired = 0
+	print "Returning [%s %s %s]"%(x_desired,  y_desired, th_desired)
+	desired_config = Config(x_desired, y_desired, th_desired)
+	rospy.loginfo(desired_config)
 
-	except rospy.ServiceException, e: 
-		print "Service call failed: %s"%e
+    # return a new config
+	return desired_config
 
-def usage():
-	return "%s [x y th]"%sys.argv[0]
+def get_desired_state_server():
+
+	rospy.init_node('get_desired_state_server')
+
+    ### gets the service request (t), and then calls the function provide_reference_config to 
+    ### send a response (congiguration q)
+	s = rospy.Service('get_desired_state', DesiredState, provide_reference_config)
+	print "Ready to provide reference configuration for the Turtlebot."
+	rospy.spin()
 
 if __name__ == "__main__":
-	if len(sys.argv) == 4:
-		x = int(sys.argv[1])
-		y = int(sys.argv[2])
-		th = int(sys.argv[3])
 
-	else: 
-		print usage()
-		sys.exit(1)
+	try:get_desired_state_server()
+	except rospy.ROSInterruptException: pass
 
-	print "Requesting [%s %s %s]"%(x,y,th)
-	print "%s %s %s %s"%(x,y,th,get_desired_state_client(x,y,th))
 
