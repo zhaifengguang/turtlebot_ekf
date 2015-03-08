@@ -69,7 +69,8 @@ def send_vel_command(data):
 		velocity_linear = sqrt(v_x**2 + v_y**2)
 		velocity_angular= (yaw_desired - yaw_estimated)/dt
 		#print "velocities linear=$s, angular=%s"%(velocity_linear, velocity_angular)
-		velocities = Twist(Vector3((velocity_linear),0,0), Vector3(0,0,(velocity_angular)))
+		#velocities = Twist(Vector3((velocity_linear),0,0), Vector3(0,0,(velocity_angular)))
+		velocities = Twist(Vector3((0),0,0), Vector3(0,0,(0)))
 		rospy.loginfo(velocities)
 		pub.publish(velocities)
 		#past_time = new_time
