@@ -7,4 +7,3 @@
 	<!--<node name="desired_state" pkg="my_tutorial" type="reference_provider.py" required="true" output="screen" launch-prefix="xterm -e"/> -->
 
 </launch>
-

@@ -22,7 +22,7 @@ from math import cos, sin, tan, atan, pi, sqrt
 from turtlesim.srv import TeleportAbsolute
 import sys
 
-T = 10 
+T = 8 
 T = input("How fast should Mr.Happy Turtle run?")
 
 #get turtle located and oriented correctly for t=0
@@ -33,21 +33,18 @@ resp1 = turtle1_teleport_absolute(5.54, 5.54, 0.0)
 	
 def get_vel(t):
 
-	r = 3
-
-	velocity_linear = 2*pi*r/T
-	velocity_angular = 2*pi/T
-	# v_x = 12*pi*cos(4*pi*t/T)/T
-	# v_y = 6*pi*cos(2*pi*t/T)/T
-
-	# a_x = (-48*pi**2*sin(4*pi*t/T))/T**2
-	# a_y = (-12*pi**2*sin(2*pi*t/T))/T**2
 	
-	# velocity_linear = sqrt(v_x**2 + v_y**2)
+	v_x = 12*pi*cos(4*pi*t)
+	v_y = 6*pi*cos(2*pi*t)
 
-	# theta = atan(v_x/v_y)
+	a_x = (-48*pi**2*sin(4*pi*t))
+	a_y = (-12*pi**2*sin(2*pi*t))
+	
+	velocity_linear = sqrt(v_x**2 + v_y**2)
+	
+	theta = atan(v_x/v_y)
 
-	# velocity_angular = ((a_y*v_x)-(a_x*v_y))/((v_x*v_x)+(v_y*v_y))
+	velocity_angular = ((a_y*v_x)-(a_x*v_y))/((v_x*v_x)+(v_y*v_y))
 
 
 		#the following in terminal will make it go in perfect circle

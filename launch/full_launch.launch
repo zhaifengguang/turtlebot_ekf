@@ -7,8 +7,8 @@
 
    	<!-- teleop -->
     	<!-- TO DO::: ADD ARGUMENT TO CHOOSE BETWEEN JOYSTICK OR KEYBOARD TELEOP -->
-    	<include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
-
+    <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
+	<include file="$(find turtlebot_teleop)/launch/ps3_teleop.launch"/>
 
    	<!-- 3D visualization -->
 	<include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
@@ -19,11 +19,19 @@
 
 	<!-- run nodes -->
 	<!-- motion controller node -->
-	<include file="$(find my_tutorial)/launch/motion_controller.launch"/>
+	<!--include file="$(find my_tutorial)/launch/motion_controller.launch"/-->
+	<node name="motion_model" pkg="my_tutorial" type="basic_motion_model.py" required="true" output="screen" launch-prefix="xterm -e"/>
+	
 	<!-- measuremetn processing node -->
-	<include file="$(find my_tutorial)/launch/measurement_processing.launch"/>
+	<!--include file="$(find my_tutorial)/launch/measurement_processing.launch"/-->
+	<node name="prediction" pkg="my_tutorial" type="data_processing.py" required="true" output="screen" launch-prefix="xterm -e"/>
+	
 	<!-- reference provider -->
-	<include file="$(find my_tutorial)/launch/reference_provider.launch"/>
+	<!--include file="$(find my_tutorial)/launch/reference_provider.launch"/-->
+	<node name="get_desired_state_server" pkg="my_tutorial" type="reference_provider.py" required="true" output="screen" launch-prefix="xterm -e"/>
 
+	<!-- laser scan range data -->
+	<node name="laser_data" pkg="my_tutorial" type="laser_scan.py"/>
    
 </launch>
+

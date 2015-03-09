@@ -19,7 +19,7 @@ def get_laser_range():
 def conver_to_string(data):
 	string = ''
 	for i in range(0,len(data)):
-		string += str(data[i])+' | ' 
+		string += str(data[i])+', ' 
 	string += ' || len = ' + str(len(data))
 	return(string)
 
@@ -28,7 +28,7 @@ def print_laser_scan(data):
 	msg = conver_to_string(data.ranges)
 	#print "detected ranges: %s"%(data.ranges)
 
-	rospy.sleep(5)
+	rospy.sleep(1)
 
 	pub.publish(msg)
 

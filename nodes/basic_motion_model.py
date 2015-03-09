@@ -6,17 +6,19 @@ import rospy
 from geometry_msgs.msg import Twist, Vector3
 from my_tutorial.srv import * #import all custom package srv
 from my_tutorial.msg import * #import all custom package msg
-from math import sqrt
+from math import sqrt, pi
 
 # global variable FIND A BETTER WAY TO DO THIS!
 # x_estimated = 0
 # y_estimated = 0
 # yaw_estimated = 0
-
+#Define publiser to send the calculated velocity to the turtlebot
+print "1"
+pub = rospy.Publisher('/cmd_vel_mux/input/teleop',Twist, queue_size = 10)
 #Subscribed to Topic state_estimate that is being published
 #by the prediction node (executable file name: data_processing)
 def get_state_belief():
-
+	print "2"
 	#Initiate motion model node for the Bayes Filter.
 	rospy.init_node('motion_model', anonymous=True)
 
@@ -27,7 +29,7 @@ def get_state_belief():
 
 
 def get_desired_state_client(t):
-
+	print "5"
 	rospy.wait_for_service('get_desired_state')
 	try: 
 
@@ -44,10 +46,10 @@ def get_desired_state_client(t):
 
 def send_vel_command(data):
 
-	#Define publiser to send the calculated velocity to the turtlebot
-	pub = rospy.Publisher('/cmd_vel_mux/input/teleop',Twist, queue_size = 10)
+	print "3"
+	global pub
 
-	r = rospy.Rate(62.5) #62.5hz
+	r = rospy.Rate(80) #62.5hz
 
 	x_estimated = data.x
 	y_estimated = data.y
@@ -56,26 +58,40 @@ def send_vel_command(data):
 	# spin() simply keeps python from exiting until this node is stopped
 	#rospy.spin()
 	
+	t = 0
 
+	#################
+	T = 10
+
+	r = 0.5
+
+	velocity_linear = 2*pi*r/T
+	velocity_angular = 2*pi/T
+	##################
 	while not rospy.is_shutdown():
 
-		t = rospy.get_time()
-		(x_desired, y_desired, yaw_desired) = get_desired_state_client(t)
+		# print "4"
+		
+		# (x_desired, y_desired, yaw_desired) = get_desired_state_client(t)
+		# print "6"
+		# new_time = rospy.get_time()
+		# dt = new_time - t
+		# v_x = (x_desired - x_estimated)/dt
+		# v_y = (y_desired - y_estimated)/dt
+		# velocity_linear = sqrt(v_x**2 + v_y**2)
+		# velocity_angular= (yaw_desired - yaw_estimated)/dt
 
-		new_time = rospy.get_time()
-		dt = new_time - t
-		v_x = (x_desired - x_estimated)
-		v_y = (y_desired - y_estimated)
-		velocity_linear = sqrt(v_x**2 + v_y**2)
-		velocity_angular= (yaw_desired - yaw_estimated)/dt
-		#print "velocities linear=$s, angular=%s"%(velocity_linear, velocity_angular)
-		#velocities = Twist(Vector3((velocity_linear),0,0), Vector3(0,0,(velocity_angular)))
-		velocities = Twist(Vector3((0),0,0), Vector3(0,0,(0)))
+
+		# r.sleep()
+
+		print "velocities linear=%d, angular=%d"%(velocity_linear, velocity_angular)
+		velocities = Twist(Vector3((velocity_linear),0,0), Vector3(0,0,(velocity_angular)))
 		rospy.loginfo(velocities)
 		pub.publish(velocities)
 		#past_time = new_time
 
-		r.sleep()
+		#r.sleep()
+		t = rospy.get_time()
 
 	rospy.spin()
 
