@@ -2,6 +2,7 @@
 
 import rospy
 import sys
+import numpy
 from nav_msgs.msg import Odometry
 from my_tutorial.msg import * 
 from tf.transformations import euler_from_quaternion
@@ -25,9 +26,12 @@ def get_state_belief(bel_state):
 	x = bel_state.pose.pose.position.x
 	y = bel_state.pose.pose.position.y
 
+	covariance = bel_state.pose.covariance
 	#rospy.loginfo(rospy.get_caller_id() + "I think I am at coordinates: x=%s, y=%s,th=%s",x,y,yaw)
+	print ""
 	print "I think I am at coordinates x=%s, y=%s, th=%s"%(bel_state.pose.pose.position.x, bel_state.pose.pose.position.y, yaw)
-
+	print ""
+	print "My covariaonce is: ", numpy.array(covariance[0]), numpy.array(covariance[7]),numpy.array(covariance[35]), numpy.array(covariance[14]), numpy.array(covariance[21]), numpy.array(covariance[28])
 	pub = rospy.Publisher('state_estimate',Config, queue_size = 10)
 
 	estimated_config = Config(x,y,yaw)
