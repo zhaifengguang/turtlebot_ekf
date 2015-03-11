@@ -8,9 +8,11 @@ from my_tutorial.msg import *
 
 pub = rospy.Publisher('range_data',String, queue_size = 10)
 
-def get_laser_range():
-		#make node
+#subscribed to the /scan topic. pointcloud_to_laserscan package converts kinect 3D pcl to 2D laser scan
+def get_laser_range(): 
+	#make node
  	rospy.init_node('laser_data', anonymous=True)
+ 	#make subscriber
 	rospy.Subscriber("scan", LaserScan, print_laser_scan)
 
 	# spin() simply keeps python from exiting until this node is stopped
@@ -26,11 +28,12 @@ def conver_to_string(data):
 def print_laser_scan(data):
 	global pub
 	msg = conver_to_string(data.ranges)
-	#print "detected ranges: %s"%(data.ranges)
-
+		#print "detected ranges: %s"%(data.ranges)
+	msg_array = data.ranges
 	rospy.sleep(1)
 
-	pub.publish(msg)
+	pub.publish(data)
+
 
 if __name__ == '__main__':
 	#try: turtlebot_get_state_belief()
