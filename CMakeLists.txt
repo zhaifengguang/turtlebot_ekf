@@ -57,6 +57,7 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
    FILES
+   RefState.srv
    DesiredState.srv
    Add.srv
    Sub.srv
@@ -73,7 +74,7 @@ add_service_files(
  generate_messages(
    DEPENDENCIES
    std_msgs
-   sensor_msgs#   visualization_msgs
+   #sensor_msgs#   visualization_msgs
  )
 
 ###################################

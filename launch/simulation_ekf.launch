@@ -1,0 +1,21 @@
+<launch>
+
+	<!-- Include launch files -->
+	<!-- gazebo launch -->
+	<include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch"/>
+
+   	<!-- rviz -->
+	<!--include file="$(find turtlebot_rviz_launchers)/launch/view_robot.launch"/-->
+
+	<!-- run nodes -->
+	<!-- motion controller node -->
+	<node name="motion_model" pkg="my_tutorial" type="motion_model.py" output="screen" launch-prefix="xterm -e"/>
+	
+	<!-- measuremetn processing node -->
+	<node name="meas_update" pkg="my_tutorial" type="meas_update.py" output="screen" launch-prefix="xterm -e"/>
+	
+	<!-- reference provider -->
+	<node name="reference_provider" pkg="my_tutorial" type="reference_provider.py" output="screen" launch-prefix="xterm -e"/>
+
+</launch>
+

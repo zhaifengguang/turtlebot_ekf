@@ -25,7 +25,7 @@ def get_state_belief():
 	rospy.init_node('motion_model', anonymous=True)
 
 	rospy.Subscriber('range_data', LaserScan, avoid_obstacle)
-	print "back again"
+	
 	#(x_estimated, y_estimated, yaw_estimated) = get_state_belief()
 	rospy.Subscriber('state_estimate', Config, send_vel_command)
 
