@@ -96,7 +96,7 @@ def send_vel_command(data):
 	# 	# print "6"
 	# 	new_time = rospy.get_time()
 	# 	dt = new_time - t
-	# 	v_x = (x_desired - x_estimated)/dt
+		v_x = (x_desired - x_estimated)/dt
 	# 	v_y = (y_desired - y_estimated)/dt
 	# 	velocity_linear = sqrt(v_x**2 + v_y**2)
 	# 	# velocity_angular= (yaw_desired - yaw_estimated)/dt

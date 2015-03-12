@@ -4,10 +4,12 @@ import rospy
 import sys
 import numpy
 import std_msgs.msg
+import matplotlib.pyplot as plt
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from my_tutorial.msg import * 
 from tf.transformations import euler_from_quaternion
+
 
 
 #In the extended kalman filter, the observation(measurement) model
@@ -28,6 +30,8 @@ measurement =	0
 ave_meas_dist = 0
 
 pub = rospy.Publisher('state_estimate',Config)
+
+
 
 #subscribed to the /scan topic. pointcloud_to_laserscan package converts kinect 3D pcl to 2D laser scan
 def get_data(): 
@@ -144,6 +148,38 @@ def meas_update_step(event):
 
 	rospy.logdebug(state_estimate)
 	pub.publish(state_estimate)
+
+
+	fig = plt.figure(1)
+	ax = fig.gca()
+	plt.axis('equal')
+	ax1 = plt.gca()
+
+	x_updated = []
+	y_updated = []
+
+	plt.ion()
+	plt.show()
+
+	x_updated.append(state_estimate.x)
+	y_updated.append(state_estimate.y)
+
+	x_predict = []
+	y_predict = []
+
+	x_predict.append(predicted_state_est.x)
+	y_predict.append(predicted_state_est.y)
+
+	plt.plot(x_predict, y_predict, 'ro')
+	plt.ylabel("odom data")
+
+	plt.plot(x_updated,y_updated,'b*')
+	plt.ylabel("estimated state")
+
+
+	plt.draw()
+	plt.grid
+
 
 if __name__ == '__main__':
 	#When program is run, first get the measurements
