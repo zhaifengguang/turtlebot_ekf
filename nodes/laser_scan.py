@@ -32,7 +32,7 @@ def print_laser_scan(data):
 	msg_array = data.ranges
 	rospy.sleep(1)
 
-	pub.publish(data)
+	pub.publish(msg_array)
 
 
 if __name__ == '__main__':
