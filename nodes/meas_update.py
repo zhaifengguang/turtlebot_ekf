@@ -3,6 +3,7 @@
 import rospy
 import sys
 import numpy
+import std_msgs.msg
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from my_tutorial.msg import * 
@@ -25,6 +26,8 @@ predicted_state_est = 0
 predicted_covariance_est = 0
 measurement =	0
 ave_meas_dist = 0
+
+pub = rospy.Publisher('state_estimate',Config)
 
 #subscribed to the /scan topic. pointcloud_to_laserscan package converts kinect 3D pcl to 2D laser scan
 def get_data(): 
@@ -49,6 +52,8 @@ def get_data():
 	# the callback is scheduled for everying 1/1127th of a second (8.8hz)
 	rospy.Timer(rospy.Duration(0.1127), meas_update_step, oneshot=False)
 
+
+	
 	#spin() simply keeps python from exiting until this node is stopped
 	rospy.spin()
 
@@ -105,6 +110,7 @@ def kinect_scan_estimate(scan_data):
 # THIS IS WHERE FILTERING HAPPENS
 ### 
 def meas_update_step(event):
+	global pub
 	#Account for the measurement noise by adding error 
 	#meas_noise = ??;
 
@@ -131,6 +137,13 @@ def meas_update_step(event):
 	#
 	#??????????????????????///
 
+	#now that we have updated the state estimate, we must update the odometry data
+	# ????????????? rostopic pub /mobile_base/commands/reset_odometry std_msgs/Empty
+	# 
+	state_estimate = Config(updated_state_estimate[0], updated_state_estimate[1], updated_state_estimate[2])
+
+	rospy.logdebug(state_estimate)
+	pub.publish(state_estimate)
 
 if __name__ == '__main__':
 	#When program is run, first get the measurements
