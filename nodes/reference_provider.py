@@ -15,8 +15,9 @@ th_now = 0
 def reference_request_server(req):
 
 	x_desired = 0
-	y_desired = y_now + 0.1
-	th_desired = pi/2
+	y_desired = y_now + 0.00001
+	#th_desired = pi/2
+	th_desired = th_now
 
 	desired_state = Config(x_desired, y_desired, th_desired)
 	#rospy.loginfo(desired_state)

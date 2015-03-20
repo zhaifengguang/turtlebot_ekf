@@ -18,7 +18,7 @@ from matplotlib.patches import Ellipse
 #does not need to be a linear function of state, but may instead be 
 #a differentiable function. 
 
-#Simplest (and most error prone) measurmement model using scan data. 
+#Simplest (and most error prone) measurement model using scan data. 
 #We are throwing most of the data away for the sake of simplicity. 
 #if the PCL was used instead of laser scan, the measurement update model
 #would reduce the uncertainty more. 
@@ -27,6 +27,7 @@ from matplotlib.patches import Ellipse
 #along the wall. The covariance should increase
 
 #INITIALIZE UNCERTAINTY DISTRIBUTION
+#using prior state knowledge
 predicted_state_est = 0
 predicted_covariance_est = 0
 state_trans_uncertainty_noise = 0
@@ -110,7 +111,8 @@ def kinect_scan_estimate(scan_data):
 
 	sum_dist = 0
 	length = 0
-	for i in range (310, 330):
+	#for i in range (310, 330):
+	for i in range (580, 600):
 		if str(measurement[i]) != 'nan' :
 			sum_dist += measurement[i]
 			length += 1 
@@ -164,7 +166,7 @@ def meas_update_step(event):
 	pre_cov_store = predicted_covariance_est
 
 	#Updated Covariance estimate
-	predicted_covariance_est= (numpy.identity(3) - numpy.dot(near_optimal_kalman_gain,H))*predicted_covariance_est
+	predicted_covariance_est= (numpy.identity(3) - numpy.cross(near_optimal_kalman_gain,H))*predicted_covariance_est
 	#??????????????????????//
 
 	#storing updated covariance estimate for plotting
@@ -201,10 +203,12 @@ def meas_update_step(event):
 	y_predict.append(predicted_state_est.y)
 
 	plt.plot(x_predict, y_predict, 'ro')
-	plt.ylabel("odom data")
+	plt.ylabel("y")
+	plt.xlabel("x")
 
 	plt.plot(x_updated,y_updated,'b*')
-	plt.ylabel("estimated state")
+	plt.ylabel("y")
+	plt.xlabel("x")
 
 
 	#Plot the covariance
@@ -215,7 +219,8 @@ def meas_update_step(event):
 
 	for j in xrange(1,4):
 		ell = Ellipse(xy=(numpy.mean(x_predict),numpy.mean(y_predict)), width=lambda_pre[0]*j*2, height=lambda_pre[1]*j*2,angle=numpy.rad2deg(numpy.arccos(v[0,0])))
-	ell.set_facecolor('none')
+
+	ell.set_facecolor('red')
 	ax.add_artist(ell)
 
 	lambda_up,v=numpy.linalg.eig(up_cov_store)
@@ -228,8 +233,6 @@ def meas_update_step(event):
 	ell.set_facecolor('none')
 	ax.add_artist(ell)
 
-	plt.scatter(x_updated,y_updated)
-
 	plt.show()
 	plt.draw()
 	plt.grid
@@ -239,5 +242,6 @@ if __name__ == '__main__':
 	#When program is run, first get the measurements
 	try: get_data()
 	except rospy.ROSInterruptException: pass
+
 
 	
