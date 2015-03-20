@@ -38,7 +38,7 @@ def reference_request_server(req):
 
 	# Only move in the y direction in 1 mm increments. 
 	x_desired = x_now
-	y_desired = y_now + 0.001
+	y_desired = y_now + 0.1
 	th_desired = th_now
 
 	# Package desired state in a custom message of type 'Config' 

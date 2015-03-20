@@ -91,11 +91,11 @@ def send_vel_command(desired_state):
 	y_dot = (desired_state.y - y_est)/dt
 	th_dot = (desired_state.th - th_est)/dt
 	
-	# linear_vel = sqrt(x_dot**2 + y_dot**2)
-	# angular_vel = th_dot
+	linear_vel = sqrt(x_dot**2 + y_dot**2)
+	angular_vel = th_dot
 	# Setting velocities to zero while I test my covariance plots ...
-	linear_vel = 0.0
-	angular_vel = 0.0
+	# linear_vel = 0.0
+	# angular_vel = 0.0
 
 	# Send velocity commands to the /mobile_base_nodelet_manager 
 	velocities = Twist(Vector3(linear_vel, 0, 0),Vector3(0,0,angular_vel))	
