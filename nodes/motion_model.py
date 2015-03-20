@@ -15,13 +15,14 @@ th_est = 0
 #create instance of a publisher
 pub = rospy.Publisher('/cmd_vel_mux/input/teleop',Twist, queue_size = 10)
 
-def get_state_estimate(state_estimate):
+def get_state_estimate(state_est):
+	print "in state estimate"
 	
 	global x_est, y_est, th_est
 
-	x_est = state_estimate.x
-	y_est = state_estimate.y
-	th_est = state_estimate.th
+	x_est = state_est.x
+	y_est = state_est.y
+	th_est = state_est.th
 
 	print "in current_estimate", x_est, y_est, th_est
 
@@ -49,7 +50,8 @@ def send_vel_command(desired_state):
 	# set the velocities:
 	# x_dot = (desired_state.x - x_est)/dt
 	# y_dot = (desired_state.y - y_est)/dt
-	# th_dot = (desired_state.th - th_est)/dt	
+	# th_dot = (desired_state.th - th_est)/dt
+	print "in send_vel_command"	
 	r = rospy.Rate(10)
 
 	linear_vel = 0.1
@@ -62,11 +64,13 @@ def send_vel_command(desired_state):
 	r.sleep()
 
 def main():
+	print "in Main"
 	rospy.init_node('motion_model', anonymous=True)#, log_level=rospy.INFO)
-
+	print "node initiated"
 	#rospy.Timer(rospy.Duration(0.1127), get_state_estimate, oneshot=False)
 	rospy.Subscriber('state_estimate', Config, get_state_estimate)
-
+	print "state has been gotten"
+	#send_vel_command(1)
 	rospy.spin()
 
 

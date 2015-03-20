@@ -1,0 +1,305 @@
+https://vimeo.com/88057157
+
+
+
+Robot Motion
+*Motion Model
+*Measurement Model
+
+From Chapter 5 intro of book: 
+(*Robot kinematics, which is what this tutorial is generally about, has been studied thoroughly in the past decades. However, it has almost exlusively been addressed in deterministic form. Probobalisitec robotics generalizes kinematic equations to the fact that the outcome of a control is uncertain, due to contorl noise or unmodeled exogenous efects. Which is almost certainly always the case when it comes to robot motion *)
+
+This tutorial tries to understand the complex and ??? concepts of robot motion in a very specific setting, in order ot make the understanding the material easier to grasp. 
+
+
+Problem Formulation
+using only Kinect and hardware on Turtlebot. 
+No additional sensors (no laser scanner, external camera, etc)
+measurements are perfomred indoors
+no moving objects when data is colllected 
+no real-time demand
+
+Preliminaries: 
+
+Robot Motion: 
+	*Kinematics: "The calculus describing the effect of conftrol actions on the configuration of a robot"
+	*Configuration: "The configuration of a rigid mobile robot is commobly described by six variables, its three dimensional Catesian coordinates and its threee Euler angles (roll, pitch, yaw) relative to an external coordinate frame"
+		* in this tutorial, we are working with the mobile turtlebot operating in a planar environment, so the kinematic state is summarizd by three variables, referred to as pose. 
+
+	* Pose: "Put illustration" .The pose of the robot is described by the vector: <x, y, theta>
+		* bearing or heading: the orientation of a robot is often termed bearing or heading
+		* In this tutorial, we postulate that a robot with orientation theta = 0  points into the direction of the global x axis and a robt with an orientation of theta = pi/2 points in the direction of its y axis
+		* Location: location refers to the robots pose without taking into accounhet orientation, described by the 2D vector: <x,y>
+		* Kinematic state: The pose and the location of the objects in the environment may consititute the kinematic state (x_t) of the robot-environment system. 
+		* NOTE: x and x_t should not be confused. x refers to a coordinate while x_t is a state that consists of (x,y,theta)
+
+
+	 configuration (link to configuration)
+
+	 Motion Model 
+	 *** (probabalistic kinematic model or motion model) (don't say this, sya it in laymens term): plays the role of the state transition model in mobile robtics. 
+	 ??????COME BACK TO MOTION MODEL 
+	 page 119
+
+Robot Perception: 
+	
+	Measurement Model: 
+
+	*Sensor error
+	*not deterministic function: zt = f(xt), a probabilistic density p(zt | xt):: In this way, the inacurasies of the sensor measurement are accounted for in our model. 
+	*Maps: 
+		Measurements are made with reference to the environement in which they are generated. So we need a map of the environment and objects within in order to give meaning to our measurements. Technically, sesor measinurements are caused by pysical objects, not the map of those objects, however it is tradition to condition sensor models on the map.
+			#feature based mapss
+				**easier to adjust the position of an object for example by adding more sensing
+				**popular in robotics where maps are constructed from sensor data
+			#volumetric or lacoation-based maps
+
+		* map representation: a classical map represenstioant is known as occupancy grid map (location based)
+			* ASSIGNE A BINARY OCCUPANCY VALUE TO EACH X-Y LOCATION WHICH SPEFIFICES WHETHER OR NOT A LOCATION IS OCCUPIED WITH AN OBJECT. GREAT FOR MOBILE ROBOT NAVIGATION: EASY TO FIND PATHS THORUGH THE UNOCCUPIED SPACE.
+
+	* Measurement: Usurally sensor readings generate more than a single numerical value. More often than not, the sensor reading consists of an array of values. 
+
+	Depending on the type of sensor data beaing measured, different mathematical models are used to model the sensor readings. 
+
+	*Beam Models of Range Finders: 
+				*
+				* Moving objects can be treated as noise ( not as accurate by easier than treating as part of state vector) and trying to estimate their location. 
+				* We are more likely to measure a person if they are closer in range .. (pg 155: exponential dist)
+
+Turtlebot2: 
+Hardware: 
+Kobuki base
+kinect camera 
+100 degrees/second signle axis gyro ??? double check
+
+What is the kobuki: 
+"iClebo Kobuki is a low-cost mobile research base designed for education and research on state of art robotics. With continuous operation in mind, Kobuki provides power supplies for an external computer as well as additional sensors and actuators. Its highly accurate odometry, amended by our factory calibrated gyroscope, enables precise navigation."
+
+Kinect
+
+http://wiki.ros.org/openni_kinect/kinect_accuracy
+
+Motion Model: 
+In practice there is often two types of motion models: 
+(motion_models.ppt)
+* velocity-based (aka dead reckoning)
+	*must be used when wheel encoders are not available in the system
+	*Dead reconking: 
+		Deduced reckoning
+		Mathematical procedure for determing the present location of a mobile robot
+		Achived by calculating the current pose of the vehicle based on its velocities and the time elapsed
+* Odometry-based
+	*Used when systems are equipped with wheel encoders
+	*maybe a link to encoders
+
+
+Motion models are used to estimate pose and calculate the new pose based on the velocities and the time elapsed. 
+
+Our model uses odometry to estimate pose. 
+
+Estimates will never be perfect, they must account for the error because in the end we want the estiamate to be the best estimate it can be because the robot is basing all of its decisions on the estimate. 
+Motion Error: 
+	*many resons: 
+		nothing is ideal
+		different wheel diameters
+		bumps
+		carpet vs stone floor
+		etc
+
+What are we trying to determine with pose estimation?
+	*the position of the robot relative to the world/map
+	*the direction of the robot relative to the world/map
+	*the distance to obstacles 
+	*the direction to obstacles
+
+Obstacle Measurement: 
+The distance and direction to obstacles can be determined directly from the sensor (kinect)
+We know the max range of the sensor, and if nothing is detected within that range we asume there is no obstacle in that direction in that distance to the robot.
+* Convert Kinect measurement to distance to Obstacle
+*works by measuring how much wheel has turned since previous control loop 
+
+Robot Pose Estimation: 
+A little more challenging than obstacle measurement. We used odometry. 
+*Control loop must iterate quickly so data measurements are meaningful
+
+
+From Odom to Localisation: http://learn.turtlebot.com/2015/02/01/13/
+
+/*
+A Simple Model
+
+First, our robot will have a very simple model. It will make many assumptions about the world. Some of the important ones include:
+
+    the terrain is always flat and even
+    obstacles are never round
+    the wheels never slip
+    nothing is ever going to push the robot around
+    the sensors never fail or give false readings
+    the wheels always turn when they are told to
+
+
+The Control Loop
+
+A robot is a dynamic system. The state of the robot, the readings of its sensors, and the effects of its control signals, are in constant flux. Controlling the way events play out involves the following three steps:
+
+    Apply control signals.
+    Measure the results.
+    Generate new control signals calculated to bring us closer to our goal.
+
+These steps are repeated over and over until we have achieved our goal. The more times we can do this per second, the finer control we will have over the system. (The Sobot Rimulator robot repeats these steps 20 times per second, but many robots must do this thousands or millions of times per second in order to have adequate control.)
+
+In general, each time our robot takes measurements with its sensors, it uses these measurements to update its internal estimate of the state of the world. It compares this state to a reference value of what it wants the state to be, and calculates the error between the desired state and the actual state. Once this information is known, generating new control signals can be reduced to a problem of minimizing the error.
+
+ref: http://www.toptal.com/robotics/programming-a-robot-an-introductory-tutorial
+*/
+Definitions: |Pose: Position and heading of robot
+
+
+
+ODOMETERY IN ROS: 
+nav_msgs/Odometry
+
+
+mahdieh@msr-thinkpad7:~$ rosmsg show nav_msgs/Odometry 
+std_msgs/Header header
+  uint32 seq
+  time stamp
+  string frame_id
+string child_frame_id
+geometry_msgs/PoseWithCovariance pose
+  geometry_msgs/Pose pose
+    geometry_msgs/Point position
+      float64 x
+      float64 y
+      float64 z
+    geometry_msgs/Quaternion orientation
+      float64 x
+      float64 y
+      float64 z
+      float64 w
+  float64[36] covariance
+geometry_msgs/TwistWithCovariance twist
+  geometry_msgs/Twist twist
+    geometry_msgs/Vector3 linear
+      float64 x
+      float64 y
+      float64 z
+    geometry_msgs/Vector3 angular
+      float64 x
+      float64 y
+      float64 z
+  float64[36] covariance
+
+
+Bayes filter: http://en.wikipedia.org/wiki/Recursive_Bayesian_estimation
+
+
+sensor_msgs/LaserScan
+
+
+
+TOPICS I HAVE: 
+/odom
+/joint_states
+/scan
+/cmd_vel
+/tf
+
+/pose --> don't have pose, but can look up using tf stamped transform tf.lookuptransform between two frames and also give an expection if there isn't a transform
+
+
+
+Kinect: 
+Looking inside 3dsensor.launch in turtlebot_bringup. 
+
+  <!-- Laserscan topic -->
+  <arg name="scan_topic" default="scan"/>
+
+  <include file="$(find openni_launch)/launch/openni.launch">
+    <arg name="camera"                          value="$(arg camera)"/>
+    <arg name="publish_tf"                      value="$(arg publish_tf)"/>
+    <arg name="depth_registration"              value="$(arg depth_registration)"/>
+    <arg name="num_worker_threads"              value="$(arg num_worker_threads)" />
+
+
+
+To use the depth image for SLAM we convert the point cloud to a faked laser scan signal by cutting a horizontal slice out of the image and using the nearest distance (closest depth) in each column. Fortunately we don’t need to code this ourselves. The pointcloud_to_laserscan package which is part of the turtlebot stack already covers this. 
+
+
+
+When minimal.launch: 
+
+mahdieh@msr-thinkpad7:~$ rosnode list 
+/app_manager
+/bumper2pointcloud
+/capability_server
+/capability_server_nodelet_manager
+/cmd_vel_mux
+/diagnostic_aggregator
+/master
+/mobile_base
+/mobile_base_nodelet_manager
+/robot_state_publisher
+/rosout
+/turtlebot_laptop_battery
+/zeroconf/zeroconf
+
+
+
+rostopic echo /joint_states 
+
+header: 
+  seq: 3565
+  stamp: 
+    secs: 1425587292
+    nsecs: 338168627
+  frame_id: ''
+name: ['wheel_left_joint', 'wheel_right_joint']
+position: [0.0, 0.0]
+velocity: [0.0, 0.0]
+effort: [0.0, 0.0]
+
+##########################
+#############################
+The pose of /odom which is of typy nav_msgs/Odometery
+
+pose: 
+  pose: 
+    position: 
+      x: -0.175115092479
+      y: -0.183365822218
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.0748046840469
+      w: 0.997198204594
+
+There are many things contained in here. For now, we are 
+interested in x,y,theta. The x and y is easy to get access
+to, it is pose.pose.position. 
+But if for the theta, it is not so obvious. The orientation 
+is actually a Quaternian. 
+The Quaternian.h file is located in "/opt/ros/indigo/include/tf/LinearMath$ "
+So looking inside the header files, we 
+Note for myself: (cpp coding specific stuff. :: means defining a namespace
+so tf::Matrix3x3 m is creating an instance m of class Matrix3x3 inside the 
+namespace tf. THis is why they sometimes have 'using namespace std' on the top
+of a lot files so they don't have to declare 'std vector<int> x;'' and can instead 
+write 'vector<int> x;' but better to define namespace before each so you don't have 
+namespace collision errors.)Okay, so in order ot get only the yaw, we can make use
+of special functions inside of these header files: 
+in CPP
+tf::Matrix3x3 m;
+m.setRPY(0,0,th);
+tf::Quaternion q;
+m.getRotation(q);
+
+Then in the header you have to 
+#include <tf/LinearMath/Quaternion.h>
+#incldue <tf/LinearMath/Matrix3x3.h>
+
+IN python instead we use: from tf.transformations import euler_from_quaternion
+
+###############################
+####################################

@@ -4,56 +4,47 @@ import rospy
 import sys
 from my_tutorial.srv import * 
 from my_tutorial.msg import *
-from math import cos, sin,atan
+from math import pi
+from nav_msgs.msg import Odometry
 
-####
-#	global variables: 
-r = 0.5 #radius of circular path
-h = 1
-k = 1
+x_now = 0
+y_now = 0
+th_now = 0
 
-def provide_reference_config(req):
-	# x_desired = cos(req.t)
-	# y_desired = sin(req.t)
-	# if y_desired != 0:
-	# 	th_desired = atan(x_desired/y_desired)
-	# else: th_desired = 0
-	if (req.x<1 and req.y < 1 and req.th < 1.57):
-		x_desired = 1
-		y_desired = 0
-		th_desired = 0
-	elif (req.x>=1 and req.y < 1 and req.th <1.57):
-		x_desired = 1
-		y_desired = 1
-		th_desired = 1.57
-	elif (req.x>=1 and req.y >= 1 and req.th>=1.57):
-		x_desired = 0
-		y_desired = 1
-		th_desired = -3.14
-	elif (req.x<1 and req.y >= 1 and req.th<= -3.14):
-		x_desired = 0
-		y_desired = 0
-		th_desired = -1.57		
-	print "Returning [%s %s %s]"%(x_desired,  y_desired, th_desired)
-	desired_config = Config(x_desired, y_desired, th_desired)
-	rospy.loginfo(desired_config)
 
-    # return a new config
-	return desired_config
+def reference_request_server(req):
 
-def get_desired_state_server():
+	x_desired = 0
+	y_desired = y_now + 0.1
+	th_desired = pi/2
 
-	rospy.init_node('get_desired_state_server')
+	desired_state = Config(x_desired, y_desired, th_desired)
+	#rospy.loginfo(desired_state)
 
-    ### gets the service request (t), and then calls the function provide_reference_config to 
-    ### send a response (congiguration q)
-	s = rospy.Service('get_desired_state', DesiredState, provide_reference_config)
+	return desired_state
+
+def current_estimate(data):
+	global x_now, y_now, th_now
+
+	x_now = data.x
+	y_now = data.y
+	th_now = data.th
+	print "in current_estimate", x_now, y_now, th_now
+
+def main():
+
+	#initiate service node
+	rospy.init_node('reference_provider')
+
+	rospy.Subscriber('state_estimate', Config, current_estimate)
+	#create instance of server
+	s = rospy.Service('reference_request', RefState, reference_request_server)
 	print "Ready to provide reference configuration for the Turtlebot."
+
+
+
 	rospy.spin()
 
-if __name__ == "__main__":
 
-	try:get_desired_state_server()
-	except rospy.ROSInterruptException: pass
-
-
+if __name__=='__main__':
+	main()
