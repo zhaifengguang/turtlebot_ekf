@@ -29,7 +29,7 @@ def current_estimate(data):
 	x_now = data.x
 	y_now = data.y
 	th_now = data.th
-	print "in current_estimate", x_now, y_now, th_now
+	print "Odom prediction", x_now, y_now, th_now
 
 def main():
 

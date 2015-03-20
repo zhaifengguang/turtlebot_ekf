@@ -3,14 +3,15 @@
 #populating namespace
 import rospy
 import sys
-import numpy
+import numpy 
 import std_msgs.msg
 import matplotlib.pyplot as plt
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from my_tutorial.msg import * 
 from tf.transformations import euler_from_quaternion
-
+from math import sqrt
+from matplotlib.patches import Ellipse
 
 
 #In the extended kalman filter, the observation(measurement) model
@@ -131,7 +132,7 @@ def kinect_scan_estimate(scan_data):
 # THIS IS WHERE FILTERING HAPPENS
 ### 
 def meas_update_step(event):
-	print "HERE"
+	
 	global pub
 	global predicted_covariance_est
 	#Account for the measurement noise by adding error 
@@ -159,17 +160,21 @@ def meas_update_step(event):
 
 	updated_state_estimate =  numpy.array([predicted_state_est.x, predicted_state_est.y, predicted_state_est.th]) + numpy.dot(near_optimal_kalman_gain, meas_residual)
 
+	#storing predicted covariance to plot
+	pre_cov_store = predicted_covariance_est
+
 	#Updated Covariance estimate
 	predicted_covariance_est= (numpy.identity(3) - numpy.dot(near_optimal_kalman_gain,H))*predicted_covariance_est
 	#??????????????????????//
+
+	#storing updated covariance estimate for plotting
+	up_cov_store = predicted_covariance_est
 
 	#now that we have updated the state estimate, we must update the odometry data
 	# ????????????? rostopic pub /mobile_base/commands/reset_odometry std_msgs/Empty
 	# 
 	state_estimate = Config(updated_state_estimate[0], updated_state_estimate[1], updated_state_estimate[2])
-	print "!!!!!!!!!!!!!!!!!!"
-	print "state_estimate", state_estimate
-
+	
 	rospy.logdebug(state_estimate)
 
 	pub.publish(state_estimate)
@@ -202,6 +207,30 @@ def meas_update_step(event):
 	plt.ylabel("estimated state")
 
 
+	#Plot the covariance
+	lambda_pre,v=numpy.linalg.eig(pre_cov_store)
+	lambda_pre = numpy.sqrt(lambda_pre)
+
+	ax = plt.subplot(111, aspect = 'equal')
+
+	for j in xrange(1,4):
+		ell = Ellipse(xy=(numpy.mean(x_predict),numpy.mean(y_predict)), width=lambda_pre[0]*j*2, height=lambda_pre[1]*j*2,angle=numpy.rad2deg(numpy.arccos(v[0,0])))
+	ell.set_facecolor('none')
+	ax.add_artist(ell)
+
+	lambda_up,v=numpy.linalg.eig(up_cov_store)
+	lambda_up= numpy.sqrt(lambda_up)
+
+	ax = plt.subplot(111, aspect = 'equal')
+
+	for j in xrange(1,4):
+		ell = Ellipse(xy=(numpy.mean(x_updated),numpy.mean(y_updated)), width=lambda_up[0]*j*2, height=lambda_up[1]*j*2,angle=numpy.rad2deg(numpy.arccos(v[0,0])))
+	ell.set_facecolor('none')
+	ax.add_artist(ell)
+
+	plt.scatter(x_updated,y_updated)
+
+	plt.show()
 	plt.draw()
 	plt.grid
 
@@ -210,3 +239,5 @@ if __name__ == '__main__':
 	#When program is run, first get the measurements
 	try: get_data()
 	except rospy.ROSInterruptException: pass
+
+	
