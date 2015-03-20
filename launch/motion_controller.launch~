@@ -1,9 +1,0 @@
-<launch>
-
-	<!-- running the basic_motion_model node -->
-	<node name="motion_model" pkg="my_tutorial" type="basic_motion_model.py" required="true" output="screen" launch-prefix="xterm -e"/>
-
-	<!-- running the reference provider -->
-	<!--<node name="desired_state" pkg="my_tutorial" type="reference_provider.py" required="true" output="screen" launch-prefix="xterm -e"/> -->
-
-</launch>
