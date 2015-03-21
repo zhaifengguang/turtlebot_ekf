@@ -57,7 +57,8 @@ Data is collected in real-time, but there is no real-time demand on reaching a g
 ### Robot Perception: 
 
 * Measurement: Usually sensor readings generate more than a single numerical value. More often than not, the sensor reading consists of an array of values. Depending on the type of sensor data being measured, different mathematical models are used to model the sensor readings: z_t = f(x_t); where f(x_t) depends on the type of data being measured. 
-* Sensor error: Every sensor has inaccuracies associated with it. The measurement model is in the form: z_t = f(x_t), a probabilistic density p(zt | xt) with a covariance Q_t.We accound for the error through the covarinace of the probability distribution.   
+* Sensor error: Every sensor has inaccuracies associated with it. The measurement model is in the form: z_t = f(x_t), a probabilistic density p(zt | xt) with a covariance Q_t. We are trying to find the best estimate, because the robot is basing all of its decisions on the estimate. Therefore we must account for the error. We can find this through measurements. Since we are using the kinect laser scan data, we can use the [kinect accuracy](http://wiki.ros.org/openni_kinect/kinect_accuracy) available on the ROS wiki page. 
+* motion model: 
 
 ## Helpful Links and Resources: 
 
