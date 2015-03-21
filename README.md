@@ -1,5 +1,5 @@
 # turtlebot_ekf
-Tutorial to understand how an ekf is used on a real robot for localization. 
+Tutorial to understand how an EKF is used on a real robot for localization. 
 
 # NOTICE: This is an unfinished tutorial!
 
@@ -262,7 +262,7 @@ We can get an idea of how the filter works by plotting the measurement and assoc
 
 ```
 
-![Turtlebot_Straight_Path_Localisation](Screenshot from 2015-03-20 20:18:41.png)
+![Turtlebot Straight Path Localization](Screenshot from 2015-03-20 20:18:41.png)
 
 The red dots represent the x-y pose of the robot, and the black ellipse is the measurement uncertainty.  
 The robot drifts in the y direction even though it thinks that it is going in a straight line. The uncertainty ellipse increases slowly in the y-direction (where no measurements are being taken). Also similar to the original plot,  my uncertainty in the x-direction decreases.
