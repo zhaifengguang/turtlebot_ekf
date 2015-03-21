@@ -133,6 +133,7 @@ To start the kinect camera, first ensure that the [minimal software](http://wiki
 
 #### 3.3.1 Kinect Camera <a name="Kinect Camera"></a>
 
+Link to kinect [accuracy](http://wiki.ros.org/openni_kinect/kinect_accuracy) information. This is useful for writing the measurement covariance matrix in the EKF. 
 
 ###### [Back to contents](#contents)
 
