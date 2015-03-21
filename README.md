@@ -3,6 +3,14 @@ Tutorial to understand how an ekf is used on a real robot for localization.
 
 # NOTICE: This is an unfinished tutorial!
 
+To launch the ekf in Gazebo: 
+
+> roslaunch my_tutorial simulation_ekf.launch
+
+To launch on the real Turtlebot: 
+
+> roslaunch my_tutorial ekf.launch
+
 ## Overview
 Robot kinematics, which is what this tutorial is generally about, has been studied thoroughly in the past decades. 
 However, it has almost exculisvely been addressed in deterministic form. Probobalistic robotics generalizes kinematics 
@@ -48,7 +56,8 @@ Data is collected in real-time, but there is no real-time demand on reaching a g
 
 ### Robot Perception: 
 
-
+* Measurement: Usually sensor readings generate more than a single numerical value. More often than not, the sensor reading consists of an array of values. Depending on the type of sensor data being measured, different mathematical models are used to model the sensor readings: z_t = f(x_t); where f(x_t) depends on the type of data being measured. 
+* Sensor error: Every sensor has inaccuracies associated with it. The measurement model is in the form: z_t = f(x_t), a probabilistic density p(zt | xt) with a covariance Q_t.We accound for the error through the covarinace of the probability distribution.   
 
 ## Helpful Links and Resources: 
 
