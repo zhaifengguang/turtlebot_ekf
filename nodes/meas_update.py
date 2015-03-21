@@ -243,7 +243,7 @@ def meas_update_step(event):
 	ax = plt.subplot(111, aspect = 'equal')
 
 	for j in xrange(1,4):
-		ell = Ellipse(xy=(numpy.mean(x_predict),numpy.mean(y_predict)), width=lambda_pre[0]*j*2, height=lambda_pre[1]*j*2,angle=numpy.rad2deg(numpy.arccos(v[0,0])))
+		ell = Ellipse(xy=(numpy.mean(x_predict),numpy.mean(y_predict)), width=lambda_pre[0]/(j*19), height=lambda_pre[1]/(j*10),angle=numpy.rad2deg(numpy.arccos(v[0,0])))
 
 	ell.set_facecolor('none')
 	ax.add_artist(ell)
@@ -254,7 +254,7 @@ def meas_update_step(event):
 	ax = plt.subplot(111, aspect = 'equal')
 
 	for j in xrange(1,4):
-		ell = Ellipse(xy=(numpy.mean(x_updated),numpy.mean(y_updated)), width=lambda_up[0]*j*2, height=lambda_up[1]*j*2,angle=numpy.rad2deg(numpy.arccos(v[0,0])))
+		ell = Ellipse(xy=(numpy.mean(x_updated),numpy.mean(y_updated)), width=lambda_up[0]/j*10, height=lambda_up[1]/j*10,angle=numpy.rad2deg(numpy.arccos(v[0,0])))
 	ell.set_facecolor('none')
 	ax.add_artist(ell)
 
