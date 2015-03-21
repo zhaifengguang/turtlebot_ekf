@@ -29,7 +29,7 @@ Data is collected in real-time, but there is no real-time demand on reaching a g
 
 ## Preliminaries: 
 
-### Robot motion
+### Robot Motion
 
 * Kinematics: The calculus describing the effect of conftrol actions on the configuration of a robot.
 * Configuration: The configuration of a rigid mobile robot is commobly described by six variables, its 
@@ -44,7 +44,9 @@ Data is collected in real-time, but there is no real-time demand on reaching a g
 * Kinematic state: The pose and the location of the robot and other objects in the environment may consititute the kinematic state (x_t) of the robot-environment system
 * NOTE: x and x_t should not be confused. x refers to a coordinate while x_t is a state that consists of coordinates (x,y,theta)
 
-### Motion model
+* Motion model: In probabilistic terms it is the state transition model. In general terms, it is controller that gives a command u to the robot in order to achieve a desired next state. In this tutorial, the control command is a 2x1 vector <v, w> where v is linear velocity and w and angular velocity. 
+
+### Robot Perception: 
 
 
 
