@@ -1,5 +1,5 @@
 # turtlebot_ekf
-Tutorial to understand how an ekf is used on a real robot for localization. 
+Tutorial to understand how an EKF is used on a real robot for localization. 
 
 Turtlebot Intro and Notes
 =========================
@@ -17,11 +17,11 @@ Turtlebot Intro and Notes
 
 3. [ROS Interface](#ROS Interface)
 
-  3.1. [Running the turtlebot driver](#Running the turtlebot driver)
+  3.1. [Running the Turtlebot driver](#Running the turtlebot driver)
 
   3.2. [Teleop the Turtlebot](#Teleop the Turtlebot)
 
-  3.3. [Turtlebot visualisation](#Turtlebot visualisation)
+  3.3. [Turtlebot visualization](#Turtlebot visualisation)
 
       3.3.1 [Kinect Camera](#Kinect Camera)
 
@@ -40,18 +40,18 @@ Visit [WillowGarage](www.willowgarage.com/turtlebot) for an overview of the Turt
 #### Mobile Base and Power Board
 * Kobuki base
 * 3000 mA Ni-MH Battery Pack
-* 150 degrees/second Signle Axis Gyro
+* 150 degrees/second Single Axis Gyro
 * 12V 1.5Amp Software Enabled Power Supply (for powering the Kinect)
 
 #### Sensor
 * Microsoft Kinect
-* Kinect Power Board Adaptor Cable
+* Kinect Power Board Adapter Cable
 
 ###### [Back to contents](#contents)
 
 ## 2. Operating Rules and Instructions <a name="Operating Rules and Instructions"></a>
 
-The turtlebot has a power brick for charging the base. The battery can stay charged for some 
+The Turtlebot has a power brick for charging the base. The battery can stay charged for some 
 time, but don't let the battery drain before you recharge. 
 
 There is a power switch at the base for powering on the Turtlebot. It will chirp once turned on. 
@@ -70,8 +70,8 @@ The [Turtlebot wiki](http://wiki.ros.org/Robots/TurtleBot) instructions are pret
 
 The [Turtlebot software installation](http://wiki.ros.org/turtlebot/Tutorials/indigo/Turtlebot%20Installation) guide is your friend.
 
-There you will find step by step instructions for creating a chained workspace: rocon --> kobuki --> turtlebot.
-Or you could simply merge them into one, but I personally perfer the chained workspace to keep files clean and separate. 
+There you will find step by step instructions for creating a chained workspace: rocon --> kobuki --> Turtlebot.
+Or you could simply merge them into one, but I personally prefer the chained workspace to keep files clean and separate. 
 
 ###### [Back to contents](#contents)
 
@@ -89,9 +89,9 @@ There is a third cable, which connects the Kinect to the Kobuki base for power.
 
 ## 3. ROS Interface <a name="ROS Interface"></a>
 
-### 3.1. Running the turtlebot driver <a name="Running the turtlebot driver"></a>
+### 3.1. Running the Turtlebot driver <a name="Running the Turtlebot driver"></a>
 
-Bringup instruction are found in the following link: http://wiki.ros.org/turtlebot_bringup/Tutorials/indigo/TurtleBot%20Bringup
+Bring up instruction are found in the following link: http://wiki.ros.org/turtlebot_bringup/Tutorials/indigo/TurtleBot%20Bringup
 
 To make sure the Kobuki base starts up, you must ensure that your system has the udev
 rule applied for /dev/kobuki.
@@ -112,7 +112,7 @@ There are many ways the Turtlebot can be teleoperated:
 
   * [Keyboard](http://wiki.ros.org/turtlebot_teleop/Tutorials/indigo/Keyboard%20Teleop)
   * [Joystick](http://wiki.ros.org/turtlebot_teleop/Tutorials/indigo/Joystick%20Teleop)
-      * I would recommend usign the [sixaxis](https://help.ubuntu.com/community/Sixaxis) Ubuntu package to connect to a PS3 controller instead of the ps3joy ROS package. 
+      * I would recommend using the [sixaxis](https://help.ubuntu.com/community/Sixaxis) Ubuntu package to connect to a PS3 controller instead of the ps3joy ROS package. 
   * [Qt](http://wiki.ros.org/rocon_qt_teleop/Tutorials/indigo/Qt%20Teleop%20a%20turtlebot)
   * [Interactive Markers](http://wiki.ros.org/turtlebot_interactive_markers/Tutorials/indigo/UsingTurtlebotInteractiveMarkers)
 
@@ -120,7 +120,7 @@ There are many ways the Turtlebot can be teleoperated:
 ###### [Back to contents](#contents)
 
 
-### 3.3. Turtlebot visualisation <a name="Turtlebot visualisation"></a>
+### 3.3. Turtlebot visualization <a name="Turtlebot visualization"></a>
 
 To start the kinect camera, first ensure that the [minimal software](http://wiki.ros.org/turtlebot_bringup/Tutorials/indigo/TurtleBot%20Bringup) (minimal.launch) has been launched on the robot. Also ensure the kinect is plugged into both the laptop and the Turtlebot. 
 
@@ -158,6 +158,6 @@ Link to kinect [accuracy](http://wiki.ros.org/openni_kinect/kinect_accuracy) inf
 
 Author: Mahdieh Nejati 
 
-Created: Feburary 2015
+Created: February 2015
 
 
